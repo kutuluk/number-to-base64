@@ -1,32 +1,51 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-bitwise */
+/* eslint-disable no-mixed-operators */
+/* eslint-disable no-plusplus */
+
 const expect = require('chai').expect;
 const ntob = require('../dist/number-to-base64.min.js').ntob;
 const bton = require('../dist/number-to-base64.min.js').bton;
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const inverse = {};
+for (let i = 0; i < alphabet.length; i++) {
+  inverse[alphabet.charAt(i)] = i;
+}
 
-const base64 = (number) => {
-  if (number < 0) return `-${base64(-number)}`;
+const ntobModImpl = (number) => {
+  if (number < 0) return `-${ntobModImpl(-number)}`;
 
-  let result = '';
-  // eslint-disable-next-line no-param-reassign
-  number = Math.floor(number);
+  let base64 = '';
 
   do {
     const mod = number % 64;
-    result = alphabet.charAt(mod) + result;
-    // eslint-disable-next-line no-param-reassign
     number = Math.floor(number / 64);
+    base64 = alphabet.charAt(mod) + base64;
   } while (number > 0);
 
-  return result;
+  return base64;
+};
+
+const ntobBitwiseImpl = (number) => {
+  if (number < 0) return `-${ntobBitwiseImpl(-number)}`;
+
+  let base64 = '';
+
+  do {
+    base64 = alphabet.charAt(0x3f & number) + base64;
+    number >>>= 6;
+  } while (number > 0);
+
+  return base64;
 };
 
 const test = (number) => {
   const fast = ntob(number);
-  const slow = base64(number);
-  const rev = bton(fast);
+  const slow = ntobModImpl(number);
+  const back = bton(fast);
   console.log('%s -> %s -> %s', number, number.toString(16), fast);
-  return number === rev && fast === slow;
+  return number === back && fast === slow;
 };
 
 describe('Common', () => {
@@ -40,11 +59,12 @@ describe('Common', () => {
     expect(test(9007199254740991)).to.equal(true);
     expect(test(-9007199254740991)).to.equal(true);
     expect(test(4503599627370497)).to.equal(true);
+    expect(test(-5)).to.equal(true);
   });
 
   /*
   it('Paranoid', () => {
-    for (let i = -9007199254740991; i <= 9007199254740991; i += 1) {
+    for (let i = 0; i <= 9007199254740991; i += 1) {
       expect(test(i)).to.equal(true);
     }
   });

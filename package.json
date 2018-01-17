@@ -18,7 +18,7 @@
     "url": "git@github.com:kutuluk/number-to-base64.git"
   },
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./lib/number-to-base64",
   "babel": {
     "presets": [

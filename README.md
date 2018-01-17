@@ -5,14 +5,18 @@ Number to Base64 encoding/decoding.
 
 ## Features
 
-- Convert integers in the range from -9007199254740991 to 9007199254740991 (min/max javascript safe integer)
+- Convert integers in the range from `-9007199254740991` to `9007199254740991` (min/max javascript safe integer)
 - Extremely fast due to bitwise operations
 - ES3 compatible
+
+## Perfomance comparison
+
+https://jsperf.com/number-to-base64-encoding
 
 ## Installation
 
 ```sh
-npm i number-to-base64 --save
+npm install number-to-base64
 ```
 
 ## API
@@ -31,10 +35,10 @@ Takes a base64 string and returns a number.
 <script src="https://unpkg.com/number-to-base64/dist/number-to-base64.min.js"></script>
 
 <script>
-  var value = 9007199254740991;
-  var base64 = numberToBase64.ntob(value);
-  var number = numberToBase64.bton(base64);
-  console.log('%s -> %s -> %s (%s)', value, base64, number, value === number);
+  var number = 9007199254740991;
+  var base64 = numberToBase64.ntob(number);
+  var back = numberToBase64.bton(base64);
+  console.log('%s -> %s -> %s (%s)', number, base64, back, back === number);
 </script>
 ```
 
@@ -42,10 +46,10 @@ Takes a base64 string and returns a number.
 ```javascript
 import { ntob, bton } from 'number-to-base64';
 
-const value = 9007199254740991;
-const base64 = ntob(value);
-const number = bton(base64);
-console.log('%s -> %s -> %s (%s)', value, base64, number, value === number);
+const number = 9007199254740991;
+const base64 = ntob(number);
+const back = bton(base64);
+console.log('%s -> %s -> %s (%s)', number, base64, back, back === number);
 ```
 
 Output

@@ -5,7 +5,7 @@ Number to Base64 encoding/decoding.
 
 ## Features
 
-- Convert integers in the range from `-9007199254740991` to `9007199254740991` (min/max javascript safe integer)
+- Converts all values of javascript safe integers range (from `-9007199254740991` to `9007199254740991`)
 - Extremely fast due to bitwise operations
 - ES3 compatible
 

@@ -17,6 +17,7 @@ const ntobModImpl = (number) => {
   if (number < 0) return `-${ntobModImpl(-number)}`;
 
   let base64 = '';
+  number = Math.floor(number);
 
   do {
     const mod = number % 64;
@@ -40,33 +41,56 @@ const ntobBitwiseImpl = (number) => {
   return base64;
 };
 
-const test = (number) => {
-  const fast = ntob(number);
-  const slow = ntobModImpl(number);
+const test = (number, log) => {
+  let float = number + Math.random();
+  if (Math.floor(float) !== number) {
+    float = number;
+  }
+
+  const fast = ntob(float);
+  const slow = ntobModImpl(float);
   const back = bton(fast);
-  console.log('%s -> %s -> %s', number, number.toString(16), fast);
-  return number === back && fast === slow;
+  if (log) console.log('%s (%s) -> %s -> %s', float, number.toString(16), fast, back);
+
+  if (fast !== slow) return NaN;
+  return back;
 };
 
-describe('Common', () => {
-  it('Tests', () => {
-    expect(test(0)).to.equal(true);
-    expect(test(4294967295)).to.equal(true);
-    expect(test(4294967296)).to.equal(true);
-    expect(test(-2147483648)).to.equal(true);
-    expect(test(1099511627775)).to.equal(true);
-    expect(test(1099511562240)).to.equal(true);
-    expect(test(9007199254740991)).to.equal(true);
-    expect(test(-9007199254740991)).to.equal(true);
-    expect(test(4503599627370497)).to.equal(true);
-    expect(test(-5)).to.equal(true);
+describe('Tests', () => {
+  it('Table', () => {
+    const table = [
+      0,
+      5,
+      2147483647,
+      2147483648,
+      4294967295,
+      4294967296,
+      16777214,
+      16777215,
+      16777216,
+      16777217,
+      1099511562240,
+      1099511627775,
+      4503599627370497,
+      9007199254740991
+    ];
+
+    table.forEach(value => expect(test(value, true)).to.equal(value));
   });
+
+  it('Fuzzing', () => {
+    for (let i = 0; i <= 1000000; i += 1) {
+      const t = Math.floor(Math.random() * 9007199254740991);
+      expect(test(t)).to.equal(t);
+    }
+  }).timeout(0);
 
   /*
   it('Paranoid', () => {
     for (let i = 0; i <= 9007199254740991; i += 1) {
+      if (i % 1000000000000000) console.log(i);
       expect(test(i)).to.equal(true);
     }
-  });
+  }).timeout(0);
   */
 });

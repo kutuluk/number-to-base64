@@ -9,25 +9,24 @@ for (let i = 0; i < 64; i++) {
 const ntob = (number) => {
   if (number < 0) return `-${ntob(-number)}`;
 
-  let base64 = '';
-
-  if (number > 4294967295) {
-    const mod = number % 16777216;
-    number = Math.floor(number / 16777216);
-    base64 =
-      alphabet.charAt(0x3f & (mod >>> 18)) +
-      alphabet.charAt(0x3f & (mod >>> 12)) +
-      alphabet.charAt(0x3f & (mod >>> 6)) +
-      alphabet.charAt(0x3f & mod) +
-      base64;
+  let lo = '';
+  if (number >= 16777216) {
+    const lo24 = number % 16777216;
+    number /= 16777216;
+    lo =
+      alphabet.charAt(0x3f & (lo24 >>> 18)) +
+      alphabet.charAt(0x3f & (lo24 >>> 12)) +
+      alphabet.charAt(0x3f & (lo24 >>> 6)) +
+      alphabet.charAt(0x3f & lo24);
   }
 
+  let hi = '';
   do {
-    base64 = alphabet.charAt(0x3f & number) + base64;
+    hi = alphabet.charAt(0x3f & number) + hi;
     number >>>= 6;
   } while (number > 0);
 
-  return base64;
+  return hi + lo;
 };
 
 // base64 to number
@@ -39,8 +38,7 @@ const bton = (base64) => {
     number = number * 64 + inverse[base64.charAt(i)];
   }
 
-  if (sign) number = -number;
-  return number;
+  return sign ? -number : number;
 };
 
 export default { ntob, bton };

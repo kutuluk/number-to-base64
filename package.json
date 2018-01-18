@@ -6,6 +6,8 @@
   },
   "keywords": [
     "base64",
+    "number",
+    "converter",
     "encoder",
     "decoder"
   ],
@@ -18,7 +20,7 @@
     "url": "git@github.com:kutuluk/number-to-base64.git"
   },
   "license": "MIT",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "./lib/number-to-base64",
   "babel": {
     "presets": [

@@ -21,7 +21,7 @@
     "url": "git@github.com:kutuluk/number-to-base64.git"
   },
   "license": "MIT",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "./lib/number-to-base64",
   "babel": {
     "presets": [
@@ -48,7 +48,7 @@
     "babel": "babel ./src/number-to-base64.js --out-file ./lib/number-to-base64.js",
     "uglifyjs": "uglifyjs ./lib/number-to-base64.js -o ./dist/number-to-base64.min.js -c -m",
     "build": "npm run eslint && npm run babel && npm run uglifyjs",
-    "publish-to-npm": "npm install && npm run build && npm run test && npm run bench && npm publish"
+    "publish-to-npm": "npm install && npm run build && npm test && npm run bench && npm publish"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

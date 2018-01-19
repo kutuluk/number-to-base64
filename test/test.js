@@ -5,8 +5,7 @@
 /* eslint-disable no-console */
 
 const expect = require('chai').expect;
-const ntob = require('../dist/number-to-base64.min.js').ntob;
-const bton = require('../dist/number-to-base64.min.js').bton;
+const { ntob, bton } = require('../dist/number-to-base64.min.js');
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 const inverse = {};
@@ -36,21 +35,25 @@ const test = (number, log) => {
   const fast = ntob(float);
   const slow = modulo(float);
   const back = bton(fast);
-  if (log) console.log('%s -> %s -> %s', float, fast, back);
+  if (log) console.log('%s -> "%s" -> %s', float, fast, back);
 
   if (fast !== slow) return NaN;
   return back;
 };
 
-describe('Tests', () => {
-  it('Table', () => {
-    const table = [0, 1, 255, 65535, 4294967295, 4294967296, Date.now(), 9007199254740991];
+const table = [0, 1, 255, 65535, 4294967295, 4294967296, Date.now(), 9007199254740991];
 
+describe('Tests', () => {
+  it('Positive', () => {
     table.forEach(value => expect(test(value, true)).to.equal(value));
   });
 
+  it('Negative', () => {
+    table.forEach(value => expect(bton(ntob(-value))).to.equal(-value));
+  });
+
   it('Fuzzing', () => {
-    for (let i = 0; i <= 1000000; i += 1) {
+    for (let i = 0; i <= 10000000; i += 1) {
       const t = Math.floor(Math.random() * 9007199254740991);
       expect(test(t)).to.equal(t);
     }

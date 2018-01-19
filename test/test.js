@@ -2,6 +2,7 @@
 /* eslint-disable no-bitwise */
 /* eslint-disable no-mixed-operators */
 /* eslint-disable no-plusplus */
+/* eslint-disable no-console */
 
 const expect = require('chai').expect;
 const ntob = require('../dist/number-to-base64.min.js').ntob;
@@ -13,8 +14,8 @@ for (let i = 0; i < alphabet.length; i++) {
   inverse[alphabet.charAt(i)] = i;
 }
 
-const ntobModImpl = (number) => {
-  if (number < 0) return `-${ntobModImpl(-number)}`;
+const modulo = (number) => {
+  if (number < 0) return `-${modulo(-number)}`;
 
   let base64 = '';
   number = Math.floor(number);
@@ -28,29 +29,14 @@ const ntobModImpl = (number) => {
   return base64;
 };
 
-const ntobBitwiseImpl = (number) => {
-  if (number < 0) return `-${ntobBitwiseImpl(-number)}`;
-
-  let base64 = '';
-
-  do {
-    base64 = alphabet.charAt(0x3f & number) + base64;
-    number >>>= 6;
-  } while (number > 0);
-
-  return base64;
-};
-
 const test = (number, log) => {
   let float = number + Math.random();
-  if (Math.floor(float) !== number) {
-    float = number;
-  }
+  if (Math.floor(float) !== number) float = number;
 
   const fast = ntob(float);
-  const slow = ntobModImpl(float);
+  const slow = modulo(float);
   const back = bton(fast);
-  if (log) console.log('%s (%s) -> %s -> %s', float, number.toString(16), fast, back);
+  if (log) console.log('%s -> %s -> %s', float, fast, back);
 
   if (fast !== slow) return NaN;
   return back;
@@ -58,22 +44,7 @@ const test = (number, log) => {
 
 describe('Tests', () => {
   it('Table', () => {
-    const table = [
-      0,
-      5,
-      2147483647,
-      2147483648,
-      4294967295,
-      4294967296,
-      16777214,
-      16777215,
-      16777216,
-      16777217,
-      1099511562240,
-      1099511627775,
-      4503599627370497,
-      9007199254740991
-    ];
+    const table = [0, 1, 255, 65535, 4294967295, 4294967296, Date.now(), 9007199254740991];
 
     table.forEach(value => expect(test(value, true)).to.equal(value));
   });

@@ -1,12 +1,13 @@
 {
   "name": "number-to-base64",
-  "description": "Number to Base64 encoding/decoding",
+  "description": "Extremely fast & compact Number ⟷ Base64 converting",
   "author": {
     "name": "kutuluk"
   },
   "keywords": [
-    "base64",
     "number",
+    "base64",
+    "radix64",
     "converter",
     "encoder",
     "decoder"
@@ -20,7 +21,7 @@
     "url": "git@github.com:kutuluk/number-to-base64.git"
   },
   "license": "MIT",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "./lib/number-to-base64",
   "babel": {
     "presets": [
@@ -43,16 +44,18 @@
   "scripts": {
     "eslint": "eslint src/number-to-base64.js",
     "test": "mocha",
+    "bench": "node ./benchmark/benchmark.js",
     "babel": "babel ./src/number-to-base64.js --out-file ./lib/number-to-base64.js",
     "uglifyjs": "uglifyjs ./lib/number-to-base64.js -o ./dist/number-to-base64.min.js -c -m",
     "build": "npm run eslint && npm run babel && npm run uglifyjs",
-    "publish-to-npm": "npm install && npm run build && npm run test && npm publish"
+    "publish-to-npm": "npm install && npm run build && npm run test && npm run bench && npm publish"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
     "babel-preset-env": "^1.6.0",
+    "benchmark": "^2.1.4",
     "chai": "^4.1.2",
     "eslint": "^3.19.0",
     "eslint-config-airbnb-base": "^11.3.2",

@@ -10,7 +10,7 @@ const ntob = (number) => {
   if (number < 0) return `-${ntob(-number)}`;
 
   let lo = '';
-  if (number >= 16777216) {
+  if (number >= 4294967296) {
     const lo24 = number % 16777216;
     number /= 16777216;
     lo =

@@ -1,5 +1,5 @@
 # number-to-base64
-Extremely fast & compact Number ⟷ Base64 converting.
+Extremely fast number to radix64 converting.
 
 [![NPM version](https://img.shields.io/npm/v/number-to-base64.svg?style=flat-square)](https://www.npmjs.com/package/number-to-base64)[![Build Status](https://img.shields.io/travis/kutuluk/number-to-base64/master.svg?style=flat-square)](https://travis-ci.org/kutuluk/number-to-base64)
 
@@ -8,21 +8,20 @@ Extremely fast & compact Number ⟷ Base64 converting.
 - Converts all values of javascript safe integers range (from `-9007199254740991` to `9007199254740991`)
 - Extremely fast due to bitwise operations
 - Does not add extra padding characters for more efficient compression
-- Optimized for V8 (Chrome, Node.js)
 - ES3 compatible
 
-Number          | compact Base64
-----------------|------------
-0               | A
-63              | /
--63             | -/
-64              | BA
-4095            | //
-262143          | ///
-16777215        | ////
-68719476735     | //////
-281474976710655 | ////////
-9007199254740991| f////////
+Number           | Result
+-----------------|------------
+0                | A
+63               | /
+64               | BA
+4095             | //
+262143           | ///
+16777215         | ////
+68719476735      | //////
+281474976710655  | ////////
+9007199254740991 | f////////
+-9007199254740991| -f////////
 
 ## Installation
 
@@ -33,10 +32,10 @@ npm install number-to-base64
 ## API
 
 #### `ntob(number)`
-Takes a number and returns a compact Base64 string.
+Takes a number, discards a fractional part and returns a string.
 
 #### `bton(base64)`
-Takes a compact Base64 string and returns a number.
+Takes a string and returns a number.
 
 
 ## Usage
@@ -53,77 +52,93 @@ Takes a compact Base64 string and returns a number.
 </script>
 ```
 
-### ES6
-```javascript
-import { ntob, bton } from 'number-to-base64';
-
-const number = -9007199254740991;
-const base64 = ntob(number);
-const back = bton(base64);
-console.log('%s -> "%s" -> %s (%s)', number, base64, back, back === number);
-```
-
 Output
 ```
 -9007199254740991 -> "-f////////" -> -9007199254740991 (true)
 ```
 
+### ES6
+```javascript
+import { ntob, bton } from 'number-to-base64';
+
+const test = (number) => {
+  const base64 = ntob(number);
+  const back = bton(base64);
+  console.log('%s -> "%s" -> %s (%s)', number, base64, back, back === number);
+};
+
+[0, 1, -1, 255, 65535, 4294967295, 4294967296, Date.now(), 9007199254740991].forEach(number =>
+  test(number)
+);
+```
+
+Output
+```
+0 -> "A" -> 0 (true)
+1 -> "B" -> 1 (true)
+-1 -> "-B" -> -1 (true)
+255 -> "D/" -> 255 (true)
+65535 -> "P//" -> 65535 (true)
+4294967295 -> "D/////" -> 4294967295 (true)
+4294967296 -> "EAAAAA" -> 4294967296 (true)
+1516612803738 -> "WEdKtya" -> 1516612803738 (true)
+9007199254740991 -> "f////////" -> 9007199254740991 (true)
+```
+
 ## Benchmarking
 
 ```
-Encoding 1 -> "B"
+Converting 1 -> "B" -> 1
 ----------------------------------------------------------------
-modulo-implementation x 24,209,913 ops/sec ±1.34% (76 runs sampled)
-32bit-implementation x 31,198,373 ops/sec ±0.88% (86 runs sampled)
-number-to-base64 x 38,565,690 ops/sec ±0.78% (81 runs sampled)
-----------------------------------------------------------------
-Fastest is number-to-base64
+number-to-base64 x 12,522,220 ops/sec ±1.16% (79 runs sampled)
+        radix-64 x 5,646,873 ops/sec ±0.53% (90 runs sampled)
+         radixer x 9,247,606 ops/sec ±1.01% (88 runs sampled)
 
-Encoding 255 -> "D/"
+Converting -1 -> "-B" -> -1
 ----------------------------------------------------------------
-modulo-implementation x 7,609,115 ops/sec ±0.68% (90 runs sampled)
-32bit-implementation x 8,639,041 ops/sec ±3.66% (81 runs sampled)
-number-to-base64 x 9,291,425 ops/sec ±0.72% (88 runs sampled)
-----------------------------------------------------------------
-Fastest is number-to-base64
+number-to-base64 x 7,085,183 ops/sec ±0.65% (86 runs sampled)
+        radix-64 - error
+         radixer - error
 
-Encoding 65535 -> "P//"
+Converting 255 -> "D/" -> 255
 ----------------------------------------------------------------
-modulo-implementation x 6,101,988 ops/sec ±1.09% (89 runs sampled)
-32bit-implementation x 7,595,659 ops/sec ±0.57% (89 runs sampled)
-number-to-base64 x 7,472,295 ops/sec ±1.08% (85 runs sampled)
-----------------------------------------------------------------
-Fastest is 32bit-implementation
+number-to-base64 x 7,105,757 ops/sec ±1.04% (86 runs sampled)
+        radix-64 x 1,625,993 ops/sec ±0.75% (88 runs sampled)
+         radixer x 3,096,584 ops/sec ±1.20% (89 runs sampled)
 
-Encoding 4294967295 -> "D/////"
+Converting 65535 -> "P//" -> 65535
 ----------------------------------------------------------------
-modulo-implementation x 2,801,981 ops/sec ±0.53% (88 runs sampled)
-32bit-implementation x 4,728,056 ops/sec ±0.67% (90 runs sampled)
-number-to-base64 x 4,660,376 ops/sec ±0.96% (88 runs sampled)
-----------------------------------------------------------------
-Fastest is 32bit-implementation
+number-to-base64 x 5,823,782 ops/sec ±1.11% (88 runs sampled)
+        radix-64 x 1,394,050 ops/sec ±1.40% (90 runs sampled)
+         radixer x 1,998,073 ops/sec ±0.55% (87 runs sampled)
 
-Encoding 4294967296 -> "EAAAAA"
+Converting 4294967295 -> "D/////" -> 4294967295
 ----------------------------------------------------------------
-modulo-implementation x 2,822,325 ops/sec ±0.56% (89 runs sampled)
-32bit-implementation - out of range
-number-to-base64 x 3,841,496 ops/sec ±3.77% (80 runs sampled)
-----------------------------------------------------------------
-Fastest is number-to-base64
+number-to-base64 x 3,510,849 ops/sec ±0.52% (88 runs sampled)
+        radix-64 x 941,715 ops/sec ±1.35% (91 runs sampled)
+         radixer x 1,003,687 ops/sec ±0.54% (91 runs sampled)
 
-Encoding 1516368178259 -> "WEOlixT"
+Converting 4294967296 -> "EAAAAA" -> 4294967296
 ----------------------------------------------------------------
-modulo-implementation x 2,614,696 ops/sec ±0.49% (89 runs sampled)
-32bit-implementation - out of range
-number-to-base64 x 3,851,435 ops/sec ±0.99% (88 runs sampled)
-----------------------------------------------------------------
-Fastest is number-to-base64
+number-to-base64 x 3,284,146 ops/sec ±1.20% (89 runs sampled)
+        radix-64 x 931,296 ops/sec ±2.61% (87 runs sampled)
+         radixer x 1,561,844 ops/sec ±1.44% (85 runs sampled)
 
-Encoding 9007199254740991 -> "f////////"
+Converting 1516613323746 -> "WEdMsvi" -> 1516613323746
 ----------------------------------------------------------------
-modulo-implementation x 2,085,061 ops/sec ±0.49% (86 runs sampled)
-32bit-implementation - out of range
-number-to-base64 x 3,143,694 ops/sec ±1.06% (87 runs sampled)
+number-to-base64 x 3,041,711 ops/sec ±0.62% (90 runs sampled)
+        radix-64 x 866,496 ops/sec ±1.53% (89 runs sampled)
+         radixer x 1,143,080 ops/sec ±0.60% (89 runs sampled)
+
+Converting 9007199254740991 -> "f////////" -> 9007199254740991
 ----------------------------------------------------------------
-Fastest is number-to-base64
+number-to-base64 x 2,490,628 ops/sec ±0.71% (89 runs sampled)
+        radix-64 x 721,063 ops/sec ±1.29% (86 runs sampled)
+         radixer x 659,930 ops/sec ±0.44% (90 runs sampled)
+
+Converting -9007199254740991 -> "-f////////" -> -9007199254740991
+----------------------------------------------------------------
+number-to-base64 x 2,283,304 ops/sec ±1.07% (90 runs sampled)
+        radix-64 - error
+         radixer - error
 ```

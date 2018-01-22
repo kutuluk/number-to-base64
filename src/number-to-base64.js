@@ -1,32 +1,37 @@
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
-const inverse = {};
-for (let i = 0; i < 64; i++) {
-  inverse[alphabet.charAt(i)] = i;
+// binary to string lookup table
+const b2s = alphabet.split('');
+
+// string to binary lookup table
+// 123 == 'z'.charCodeAt(0) + 1
+const s2b = new Array(123);
+for (let i = 0; i < alphabet.length; i++) {
+  s2b[alphabet.charCodeAt(i)] = i;
 }
 
 // number to base64
 const ntob = (number) => {
   if (number < 0) return `-${ntob(-number)}`;
 
-  let lo = '';
-  if (number >= 4294967296) {
-    const lo24 = number % 16777216;
-    number /= 16777216;
-    lo =
-      alphabet.charAt(0x3f & (lo24 >>> 18)) +
-      alphabet.charAt(0x3f & (lo24 >>> 12)) +
-      alphabet.charAt(0x3f & (lo24 >>> 6)) +
-      alphabet.charAt(0x3f & lo24);
+  let lo = number >>> 0;
+  let hi = (number / 4294967296) >>> 0;
+
+  let right = '';
+  while (hi > 0) {
+    right = b2s[0x3f & lo] + right;
+    lo >>>= 6;
+    lo |= (0x3f & hi) << 26;
+    hi >>>= 6;
   }
 
-  let hi = '';
+  let left = '';
   do {
-    hi = alphabet.charAt(0x3f & number) + hi;
-    number >>>= 6;
-  } while (number > 0);
+    left = b2s[0x3f & lo] + left;
+    lo >>>= 6;
+  } while (lo > 0);
 
-  return hi + lo;
+  return left + right;
 };
 
 // base64 to number
@@ -35,7 +40,7 @@ const bton = (base64) => {
   const sign = base64.charAt(0) === '-' ? 1 : 0;
 
   for (let i = sign; i < base64.length; i++) {
-    number = number * 64 + inverse[base64.charAt(i)];
+    number = number * 64 + s2b[base64.charCodeAt(i)];
   }
 
   return sign ? -number : number;

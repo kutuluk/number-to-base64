@@ -7,11 +7,7 @@
 const expect = require('chai').expect;
 const { ntob, bton } = require('../dist/number-to-base64.min.js');
 
-const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-const inverse = {};
-for (let i = 0; i < alphabet.length; i++) {
-  inverse[alphabet.charAt(i)] = i;
-}
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'.split('');
 
 const modulo = (number) => {
   if (number < 0) return `-${modulo(-number)}`;
@@ -22,7 +18,7 @@ const modulo = (number) => {
   do {
     const mod = number % 64;
     number = Math.floor(number / 64);
-    base64 = alphabet.charAt(mod) + base64;
+    base64 = alphabet[mod] + base64;
   } while (number > 0);
 
   return base64;
@@ -53,7 +49,7 @@ describe('Tests', () => {
   });
 
   it('Fuzzing', () => {
-    for (let i = 0; i <= 10000000; i += 1) {
+    for (let i = 0; i <= 1000000; i += 1) {
       const t = Math.floor(Math.random() * 9007199254740991);
       expect(test(t)).to.equal(t);
     }
@@ -63,7 +59,7 @@ describe('Tests', () => {
   it('Paranoid', () => {
     for (let i = 0; i <= 9007199254740991; i += 1) {
       if (i % 1000000000000000) console.log(i);
-      expect(test(i)).to.equal(true);
+      expect(test(i)).to.equal(i);
     }
   }).timeout(0);
   */

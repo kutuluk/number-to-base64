@@ -1,6 +1,6 @@
 {
   "name": "number-to-base64",
-  "description": "Extremely fast & compact Number ⟷ Base64 converting",
+  "description": "Extremely fast number to radix64 converting",
   "author": {
     "name": "kutuluk"
   },
@@ -21,7 +21,7 @@
     "url": "git@github.com:kutuluk/number-to-base64.git"
   },
   "license": "MIT",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "./lib/number-to-base64",
   "babel": {
     "presets": [
@@ -62,6 +62,8 @@
     "eslint-plugin-chai-friendly": "^0.4.0",
     "eslint-plugin-import": "^2.7.0",
     "mocha": "^4.0.0",
+    "radix-64": "^1.0.4",
+    "radixer": "^1.0.0",
     "uglify-js": "^3.1.2"
   }
 }
